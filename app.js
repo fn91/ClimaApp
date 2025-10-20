@@ -1,322 +1,228 @@
+// =======================
+// App del Clima — Local + Vercel Proxy
+// =======================
 
+// ---- Nodos ----
+const inputCity    = document.getElementById("city");
+const btnSearch    = document.getElementById("btnSearch");
+const btnGeo       = document.getElementById("btnGeo");
+const btnTheme     = document.getElementById("btnTheme");
+const weatherBox   = document.getElementById("weather");
+const forecastGrid = document.getElementById("forecastGrid");
+const statusEl     = document.getElementById("status");
 
-applyTheme(getPreferredTheme());
-
-// --------- Selección de nodos ---------
-const inputCity     = document.getElementById("city");
-const btnSearch     = document.getElementById("btnSearch");
-const btnGeo= document.getElementById("btnGeo")
-const weatherBox    = document.getElementById("weather");
-const forecastBox   = document.getElementById("forecast");     // opcional si aún no lo creaste
-const forecastGrid  = document.getElementById("forecastGrid"); // idem
-const btnTheme = document.getElementById("btnTheme");
-const statusEl=document.getElementById("status");
-
-// --------- Constantes API ---------
-const API_KEY = window.OPENWEATHER_API_KEY; // definido en config.js
-const BASE_URL = "https://api.openweathermap.org/data/2.5";
-const UNITS = "metric"; // °C
+// ---- Constantes cliente ----
+const UNITS = "metric";
 const LANG  = "es";
 
-// --------- Helpers ---------
-function normalizeCityName(str) {
-  return str.trim().replace(/\s+/g, " ").toLowerCase()
-    .replace(/^\w|\s\w/g, (m) => m.toUpperCase());
-}
+// ===== Detectar entorno (local vs Vercel) =====
+const IS_LOCAL = typeof window.IS_LOCAL !== "undefined" && window.IS_LOCAL === true;
 
-function setStatus(message = "", type = "info") {
-  if (!statusEl) return;
-  statusEl.className = "status"; // reset classes
-  if (type === "loading") statusEl.classList.add("loading");
+// ---- Helpers ----
+function normalizeCityName(str){
+  return str.trim().replace(/\s+/g," ").toLowerCase()
+    .replace(/^\w|\s\w/g,(m)=>m.toUpperCase());
+}
+function setStatus(message="", type="info"){
+  if(!statusEl) return;
+  statusEl.className = "status";
+  if(type==="loading") statusEl.classList.add("loading");
   statusEl.textContent = message;
 }
-
-function lock(el, isLoading = true) {
-  if (!el) return;
-  el.disabled = isLoading;
-}
-
-
-function iconUrl(icon) {
-  return `https://openweathermap.org/img/wn/${icon}@2x.png`;
-}
-
-function fmtHour(ts) {
-  return new Date(ts * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-async function fetchJSON(url) {
-  const res = await fetch(url);
-  const payload = await res.json(); // OW devuelve JSON incluso en error
-  if (!res.ok) {
-    console.error("OpenWeather error:", res.status, payload);
-    throw new Error(`HTTP ${res.status} · ${payload?.message || "error desconocido"}`);
-  }
+function lock(el, on=true){ if(el) el.disabled = on; }
+function iconUrl(i){ return `https://openweathermap.org/img/wn/${i}@2x.png`; }
+function fmtHour(ts){ return new Date(ts*1000).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}); }
+async function fetchJSON(url){
+  const r = await fetch(url);
+  const payload = await r.json();
+  if(!r.ok) throw new Error(`HTTP ${r.status} · ${payload?.message || "error desconocido"}`);
   return payload;
 }
 
-function applyTheme(theme){
-const root = document.documentElement;
-if(theme==="dark"){
-root.classList.add("dark");
-}else{
-root.classList.remove("dark");
-
-}
-localStorage.setItem("theme",theme);
-
-}
-
-function getPreferredTheme(){
-  const saved= localStorage.getItem("theme")
-  if (saved==="dark"|| saved==="light") return saved;
-
-  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  return prefersDark ? "dark" : "light";
-
-
-}
-
-
-// --------- Render: clima actual ---------
-function renderCurrentWeatherReal(data) {
+// ---- Render actual ----
+function renderCurrentWeatherReal(data){
   const { name, sys, weather, main, wind } = data;
   const w = weather?.[0];
-
-  const cityName = `${name}${sys?.country ? ", " + sys.country : ""}`;
-  const temp = Math.round(main.temp);
+  const cityName = `${name ?? "—"}${sys?.country ? ", " + sys.country : ""}`;
+  const temp = Math.round(main?.temp ?? 0);
   const desc = w?.description || "Sin descripción";
-  const tmin = Math.round(main.temp_min);
-  const tmax = Math.round(main.temp_max);
+  const tmin = Math.round(main?.temp_min ?? 0);
+  const tmax = Math.round(main?.temp_max ?? 0);
 
   weatherBox.innerHTML = `
     <h2>${cityName}</h2>
-    <p style="font-size:2rem; font-weight:700; margin:.25rem 0;">${temp}°C</p>
+    <p style="font-size:2rem;font-weight:700;margin:.25rem 0;">${temp}°C</p>
     <p>${desc}</p>
     <p>Máx: <strong>${tmax}°C</strong> · Mín: <strong>${tmin}°C</strong></p>
     ${wind ? `<p style="opacity:.7">Viento: ${Math.round(wind.speed)} m/s</p>` : ""}
   `;
 }
 
-// --------- Render: forecast 24h ---------
-function renderForecast24h(list) {
-  
-  if (!forecastGrid) return; // por si aún no existe en el HTML
-
-
-  if (!Array.isArray(list) || list.length === 0) {
+// ---- Render forecast 24h ----
+function renderForecast24h(list){
+  if(!forecastGrid) return;
+  if(!Array.isArray(list) || list.length===0){
     forecastGrid.innerHTML = `<p>No hay datos de pronóstico.</p>`;
     return;
   }
-
-  // 8 bloques de 3h = 24h
-  const items = list.slice(0, 8).map((entry) => {
-    const time = fmtHour(entry.dt);
-    const temp = Math.round(entry.main.temp);
-    const desc = entry.weather?.[0]?.description || "";
-    const icon = entry.weather?.[0]?.icon || "01d";
+  const items = list.slice(0,8).map(e=>{
+    const time = fmtHour(e.dt);
+    const temp = Math.round(e.main?.temp ?? 0);
+    const desc = e.weather?.[0]?.description || "";
+    const icon = e.weather?.[0]?.icon || "01d";
     return `
       <div class="forecast-item">
         <div>${time}</div>
-       <img loading="lazy" src="${iconUrl(icon)}" alt="${desc}" width="50" height="50" />
+        <img loading="lazy" src="${iconUrl(icon)}" alt="${desc}" width="50" height="50" />
         <div class="t">${temp}°C</div>
         <div>${desc}</div>
       </div>
     `;
   }).join("");
-
   forecastGrid.innerHTML = items;
 }
 
-// --------- Mock (para diseño sin red) ---------
-function renderMockWeather(city) {
-  const niceCity = normalizeCityName(city);
-  const mock = { city: niceCity, temp: 22, desc: "Cielo claro (mock)", min: 18, max: 26 };
-  weatherBox.innerHTML = `
-    <h2>${mock.city}</h2>
-    <p style="font-size:2rem; font-weight:700; margin:.25rem 0;">${mock.temp}°C</p>
-    <p>${mock.desc}</p>
-    <p>Máx: <strong>${mock.max}°C</strong> · Mín: <strong>${mock.min}°C</strong></p>
-  `;
+// ---- Helper URLs según entorno ----
+function buildWeatherByCityURL(city){
+  return IS_LOCAL
+    ? `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${window.OPENWEATHER_API_KEY}&units=${UNITS}&lang=${LANG}`
+    : `/api/weather?city=${encodeURIComponent(city)}&units=${UNITS}&lang=${LANG}`;
 }
 
-// --------- Búsqueda real por ciudad ---------
-// --------- Búsqueda real por ciudad (versión corregida) ---------
-async function handleSearch() {
-  const raw = inputCity.value;
+function buildForecastByCityURL(city){
+  return IS_LOCAL
+    ? `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${window.OPENWEATHER_API_KEY}&units=${UNITS}&lang=${LANG}`
+    : `/api/forecast?city=${encodeURIComponent(city)}&units=${UNITS}&lang=${LANG}`;
+}
 
-  // 1) Validación
-  if (!raw || !raw.trim()) {
-    setStatus("Escribe una ciudad válida.", "error");
+function buildWeatherByCoordsURL(lat,lon){
+  return IS_LOCAL
+    ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${window.OPENWEATHER_API_KEY}&units=${UNITS}&lang=${LANG}`
+    : `/api/weather?lat=${lat}&lon=${lon}&units=${UNITS}&lang=${LANG}`;
+}
+function buildForecastByCoordsURL(lat,lon){
+  return IS_LOCAL
+    ? `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${window.OPENWEATHER_API_KEY}&units=${UNITS}&lang=${LANG}`
+    : `/api/forecast?lat=${lat}&lon=${lon}&units=${UNITS}&lang=${LANG}`;
+}
+
+// ---- Búsqueda por ciudad ----
+async function handleSearch(){
+  const raw = inputCity.value;
+  if(!raw || !raw.trim()){
+    setStatus("Escribe una ciudad válida.","error");
     weatherBox.innerHTML = `<p style="color:#b91c1c">Escribe una ciudad válida.</p>`;
     inputCity.focus();
     return;
   }
 
-  // 2) Preparar UI
   const city = raw.trim();
-  setStatus(`Buscando clima para ${normalizeCityName(city)}…`, "loading");
-  lock(btnSearch, true);
-  if (forecastGrid) forecastGrid.innerHTML = "";
+  setStatus(`Buscando clima para ${normalizeCityName(city)}…`,"loading");
+  lock(btnSearch,true);
+  if(forecastGrid) forecastGrid.innerHTML = "";
 
-  // 3) Comprobar API key
-  if (!API_KEY || API_KEY === "TU_API_KEY_AQUI") {
-    setStatus("⚠️ Falta la API key o es inválida. Añádela en config.js.", "error");
-    lock(btnSearch, false);
-    return;
-  }
-
-  try {
-    // 4) Clima actual
-    const currentURL  = `${BASE_URL}/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
+  try{
+    // Actual
+    const currentURL  = buildWeatherByCityURL(city);
     const currentData = await fetchJSON(currentURL);
     renderCurrentWeatherReal(currentData);
 
-    // 5) Forecast 24h
-    if (forecastGrid) {
+    // Forecast
+    if(forecastGrid){
       forecastGrid.innerHTML = `<p class="loading">Cargando pronóstico…</p>`;
-      const forecastURL  = `${BASE_URL}/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
+      const forecastURL  = buildForecastByCityURL(city);
       const forecastData = await fetchJSON(forecastURL);
-      renderForecast24h(forecastData.list); // recuerda: <img loading="lazy"> en esta función
+      renderForecast24h(forecastData.list);
     }
 
-    // 6) Éxito
     setStatus("Listo ✅");
-  } catch (error) {
-    console.error(error);
-    setStatus(`No se pudo obtener el clima. ${error.message || ""}`, "error");
+  }catch(err){
+    console.error(err);
+    setStatus(`No se pudo obtener el clima. ${err.message || ""}`,"error");
     weatherBox.innerHTML = `
       <p style="color:#b91c1c">❌ No se pudo obtener el clima para "${normalizeCityName(city)}".<br>
-      <small>${error.message || ""}</small></p>`;
-    if (forecastGrid) forecastGrid.innerHTML = "";
-  } finally {
-    // 7) Siempre desbloquear
-    lock(btnSearch, false);
+      <small>${err.message || ""}</small></p>`;
+    if(forecastGrid) forecastGrid.innerHTML = "";
+  }finally{
+    lock(btnSearch,false);
   }
 }
 
-
-async function fetchCurrentByCoords(lat, lon) {
-  const url = `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
-  return await fetchJSON(url);
+// ---- Geolocalización ----
+async function fetchCurrentByCoords(lat,lon){
+  return await fetchJSON(buildWeatherByCoordsURL(lat,lon));
 }
-
-async function fetchForecastByCoords(lat, lon) {
-  const url = `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
-  return await fetchJSON(url);
+async function fetchForecastByCoords(lat,lon){
+  return await fetchJSON(buildForecastByCoordsURL(lat,lon));
 }
-
-async function loadWeatherByCoords(lat, lon) {
-  // Feedback en UI
+async function loadWeatherByCoords(lat,lon){
   weatherBox.innerHTML = `<p>Buscando clima en tu ubicación…</p>`;
-  if (typeof forecastGrid !== "undefined" && forecastGrid) {
-    forecastGrid.innerHTML = `<p>Cargando pronóstico…</p>`;
-  }
-
-  // Peticiones reales
-  const current = await fetchCurrentByCoords(lat, lon);
+  if(forecastGrid) forecastGrid.innerHTML = `<p class="loading">Cargando pronóstico…</p>`;
+  const current = await fetchCurrentByCoords(lat,lon);
   renderCurrentWeatherReal(current);
-
-  if (typeof forecastGrid !== "undefined" && forecastGrid) {
-    const forecast = await fetchForecastByCoords(lat, lon);
-    renderForecast24h(forecast.list);
+  if(forecastGrid){
+    const fc = await fetchForecastByCoords(lat,lon);
+    renderForecast24h(fc.list);
   }
 }
 
-btnGeo.addEventListener("click", () => {
-  // 1) Geolocation soportada
-  if (!("geolocation" in navigator)) {
-    setStatus("Tu navegador no soporta geolocalización.", "error");
-    return;
-  }
+// ---- Tema oscuro/claro ----
+function applyTheme(theme){
+  const root = document.documentElement;
+  if(theme==="dark") root.classList.add("dark"); else root.classList.remove("dark");
+  localStorage.setItem("theme", theme);
+}
+function getPreferredTheme(){
+  const saved = localStorage.getItem("theme");
+  if(saved==="dark"||saved==="light") return saved;
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return prefersDark ? "dark" : "light";
+}
+applyTheme(getPreferredTheme());
+if(btnTheme){
+  btnTheme.textContent = document.documentElement.classList.contains("dark") ? "🌞" : "🌓";
+  btnTheme.addEventListener("click", ()=>{
+    const current = document.documentElement.classList.contains("dark") ? "dark" : "light";
+    const next = current==="dark" ? "light" : "dark";
+    applyTheme(next);
+    btnTheme.textContent = next==="dark" ? "🌞" : "🌓";
+  });
+}
 
-  // 2) Feedback inmediato
-  setStatus("Intentando obtener tu ubicación…");
-
-  // 3) Solicitar posición
-  navigator.geolocation.getCurrentPosition(
-    async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      try {
-        await loadWeatherByCoords(latitude, longitude);
-      } catch (err) {
-        console.error(err);
-        setStatus(`No se pudo obtener el clima por coordenadas. ${err.message || ""}`, "error");
-        if (typeof forecastGrid !== "undefined" && forecastGrid) forecastGrid.innerHTML = "";
-      }
-    },
-    (err) => {
-      // Errores típicos: 1 denegado, 2 no disponible, 3 timeout
-      let msg = "No se pudo obtener tu ubicación.";
-      if (err.code === 1) msg = "Permiso de ubicación denegado.";
-      if (err.code === 2) msg = "Ubicación no disponible en este momento.";
-      if (err.code === 3) msg = "La petición de ubicación ha caducado.";
-      setStatus(`${msg} (Código ${err.code})`, "error");
-      if (typeof forecastGrid !== "undefined" && forecastGrid) forecastGrid.innerHTML = "";
-    },
-    { enableHighAccuracy: false, timeout: 8000, maximumAge: 0 }
-  );
+// ---- Eventos ----
+btnSearch.addEventListener("click", handleSearch);
+inputCity.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter"){ e.preventDefault(); handleSearch(); }
 });
-
-
-// --------- Eventos ---------
-// ===== Geolocalización real (con feedback visual) =====
-btnGeo.addEventListener("click", () => {
-  // 1️⃣ Verificamos si el navegador soporta la API
-  if (!("geolocation" in navigator)) {
-    setStatus("Tu navegador no soporta geolocalización.", "error");
+btnGeo.addEventListener("click", ()=>{
+  if(!("geolocation" in navigator)){
+    setStatus("Tu navegador no soporta geolocalización.","error");
     return;
   }
-
-  // 2️⃣ Antes de pedir la ubicación → feedback al usuario
-  setStatus("Intentando obtener tu ubicación…", "loading");
-  lock(btnGeo, true);
-
-  // 3️⃣ Solicitamos posición
+  setStatus("Intentando obtener tu ubicación…","loading");
+  lock(btnGeo,true);
   navigator.geolocation.getCurrentPosition(
-    async (pos) => {
+    async (pos)=>{
       const { latitude, longitude } = pos.coords;
-
-      try {
-        // Cargamos clima real con coordenadas
+      try{
         await loadWeatherByCoords(latitude, longitude);
-
-        // Éxito 🎉
         setStatus("Listo ✅");
-      } catch (err) {
+      }catch(err){
         console.error(err);
-        setStatus(`No se pudo obtener el clima. ${err.message}`, "error");
-      } finally {
-        // 4️⃣ Siempre desbloqueamos el botón al final
-        lock(btnGeo, false);
+        setStatus(`No se pudo obtener el clima. ${err.message || ""}`,"error");
+        if(forecastGrid) forecastGrid.innerHTML = "";
+      }finally{
+        lock(btnGeo,false);
       }
     },
-
-    // 5️⃣ Manejo de errores de geolocalización
-    (err) => {
+    (err)=>{
       let msg = "No se pudo obtener tu ubicación.";
-      if (err.code === 1) msg = "Permiso de ubicación denegado.";
-      if (err.code === 2) msg = "Ubicación no disponible.";
-      if (err.code === 3) msg = "La petición ha caducado.";
-
-      setStatus(`${msg} (Código ${err.code})`, "error");
-      lock(btnGeo, false);
+      if (err.code===1) msg = "Permiso de ubicación denegado.";
+      if (err.code===2) msg = "Ubicación no disponible.";
+      if (err.code===3) msg = "La petición ha caducado.";
+      setStatus(`${msg} (Código ${err.code})`,"error");
+      lock(btnGeo,false);
     },
-
-    // 6️⃣ Configuración opcional: precisión, timeout, cache
-    { enableHighAccuracy: false, timeout: 8000, maximumAge: 0 }
+    { enableHighAccuracy:false, timeout:8000, maximumAge:0 }
   );
 });
-
-
-// Evento cambiar de color oscuro a  claro
-btnTheme.textContent = document.documentElement.classList.contains("dark") ? "🌞" : "🌓";
-btnTheme.addEventListener("click", () => {
-  const current = document.documentElement.classList.contains("dark") ? "dark" : "light";
-  const next = current === "dark" ? "light" : "dark";
-  applyTheme(next);
-  btnTheme.textContent = next === "dark" ? "🌞" : "🌓";
-});
-
-
-
