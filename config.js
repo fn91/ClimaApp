@@ -1,1 +1,1 @@
-window.OPENWEATHER_API_KEY = "6da1a29bcc68f110c1a0d40a2f846668";
+window.OPENWEATHER_API_KEY="86f34f5628fcaa3f40de0fafdbc3cab1"
