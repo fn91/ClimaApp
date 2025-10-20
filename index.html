@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climatizacion</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="config.js"></script>
+    <script  defer src="app.js"></script> 
+</head>
+    
+<body>
+    <header>
+        <h1>App de gestion de clima</h1>
+       <button id="btnTheme" aria-label="Cambiar tema">🌓</button>
+    
+
+    </header>
+    <main>
+       <section class="search">
+        <input id="city" type="text" placeholder="Escribe una ciudad">
+        <button id="btnSearch">Buscar</button>
+        <button id="btnGeo">Usar mi ubicación</button>
+           <p id="status" class="status" aria-live="polite"></p>
+       </section> 
+
+       <section id="weather" class="weather">
+       <p>Introduce una ciudad o usa tu ubicación</p>
+    </section>
+    <section id="forecast" class="forecast">
+  <h2>Próximas 24 h</h2>
+  <div id="forecastGrid" class="forecast-grid"></div>
+</section>
+    </main>
+
+
+
+</body>
+</html>

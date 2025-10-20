@@ -1,0 +1,1 @@
+window.OPENWEATHER_API_KEY = "6da1a29bcc68f110c1a0d40a2f846668";
