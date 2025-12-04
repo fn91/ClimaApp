@@ -1,8 +1,8 @@
 // =======================
-// App del Clima — Local + Vercel Proxy
+// App del Clima — SOLO CLIENTE (OpenWeather directo)
 // =======================
 
-// ---- Nodos ----
+// ---- Nodos del DOM ----
 const inputCity    = document.getElementById("city");
 const btnSearch    = document.getElementById("btnSearch");
 const btnGeo       = document.getElementById("btnGeo");
@@ -11,14 +11,13 @@ const weatherBox   = document.getElementById("weather");
 const forecastGrid = document.getElementById("forecastGrid");
 const statusEl     = document.getElementById("status");
 
-// ---- Constantes cliente ----
-const UNITS = "metric";
-const LANG  = "es";
+// ---- Constantes ----
+const UNITS = "metric";           // °C
+const LANG  = "es";               // idioma
+const BASE_URL = "https://api.openweathermap.org/data/2.5";
+const API_KEY  = window.OPENWEATHER_API_KEY; // definido en config.js
 
-// ===== Detectar entorno (local vs Vercel) =====
-const IS_LOCAL = typeof window.IS_LOCAL !== "undefined" && window.IS_LOCAL === true;
-
-// ---- Helpers ----
+// ---- Helpers de UI ----
 function normalizeCityName(str){
   return str.trim().replace(/\s+/g," ").toLowerCase()
     .replace(/^\w|\s\w/g,(m)=>m.toUpperCase());
@@ -32,14 +31,22 @@ function setStatus(message="", type="info"){
 function lock(el, on=true){ if(el) el.disabled = on; }
 function iconUrl(i){ return `https://openweathermap.org/img/wn/${i}@2x.png`; }
 function fmtHour(ts){ return new Date(ts*1000).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}); }
+
+
+
+// ---- fetchJSON (OpenWeather devuelve JSON incluso en error) ----
 async function fetchJSON(url){
-  const r = await fetch(url);
-  const payload = await r.json();
-  if(!r.ok) throw new Error(`HTTP ${r.status} · ${payload?.message || "error desconocido"}`);
+  const res = await fetch(url);
+  let payload;
+  try { payload = await res.json(); }
+  catch { throw new Error(`Respuesta no válida (status ${res.status})`); }
+  if(!res.ok){
+    throw new Error(`HTTP ${res.status} · ${payload?.message || "error desconocido"}`);
+  }
   return payload;
 }
 
-// ---- Render actual ----
+// ---- Render: clima actual ----
 function renderCurrentWeatherReal(data){
   const { name, sys, weather, main, wind } = data;
   const w = weather?.[0];
@@ -48,6 +55,8 @@ function renderCurrentWeatherReal(data){
   const desc = w?.description || "Sin descripción";
   const tmin = Math.round(main?.temp_min ?? 0);
   const tmax = Math.round(main?.temp_max ?? 0);
+  
+
 
   weatherBox.innerHTML = `
     <h2>${cityName}</h2>
@@ -56,20 +65,24 @@ function renderCurrentWeatherReal(data){
     <p>Máx: <strong>${tmax}°C</strong> · Mín: <strong>${tmin}°C</strong></p>
     ${wind ? `<p style="opacity:.7">Viento: ${Math.round(wind.speed)} m/s</p>` : ""}
   `;
-}
 
-// ---- Render forecast 24h ----
+  }
+
+
+  
+
+// ---- Render: pronóstico 24h (8 bloques de 3h) ----
 function renderForecast24h(list){
   if(!forecastGrid) return;
   if(!Array.isArray(list) || list.length===0){
     forecastGrid.innerHTML = `<p>No hay datos de pronóstico.</p>`;
     return;
   }
-  const items = list.slice(0,8).map(e=>{
-    const time = fmtHour(e.dt);
-    const temp = Math.round(e.main?.temp ?? 0);
-    const desc = e.weather?.[0]?.description || "";
-    const icon = e.weather?.[0]?.icon || "01d";
+  const items = list.slice(0,8).map(entry=>{
+    const time = fmtHour(entry.dt);
+    const temp = Math.round(entry.main?.temp ?? 0);
+    const desc = entry.weather?.[0]?.description || "";
+    const icon = entry.weather?.[0]?.icon || "01d";
     return `
       <div class="forecast-item">
         <div>${time}</div>
@@ -82,30 +95,6 @@ function renderForecast24h(list){
   forecastGrid.innerHTML = items;
 }
 
-// ---- Helper URLs según entorno ----
-function buildWeatherByCityURL(city){
-  return IS_LOCAL
-    ? `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${window.OPENWEATHER_API_KEY}&units=${UNITS}&lang=${LANG}`
-    : `/api/weather?city=${encodeURIComponent(city)}&units=${UNITS}&lang=${LANG}`;
-}
-
-function buildForecastByCityURL(city){
-  return IS_LOCAL
-    ? `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${window.OPENWEATHER_API_KEY}&units=${UNITS}&lang=${LANG}`
-    : `/api/forecast?city=${encodeURIComponent(city)}&units=${UNITS}&lang=${LANG}`;
-}
-
-function buildWeatherByCoordsURL(lat,lon){
-  return IS_LOCAL
-    ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${window.OPENWEATHER_API_KEY}&units=${UNITS}&lang=${LANG}`
-    : `/api/weather?lat=${lat}&lon=${lon}&units=${UNITS}&lang=${LANG}`;
-}
-function buildForecastByCoordsURL(lat,lon){
-  return IS_LOCAL
-    ? `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${window.OPENWEATHER_API_KEY}&units=${UNITS}&lang=${LANG}`
-    : `/api/forecast?lat=${lat}&lon=${lon}&units=${UNITS}&lang=${LANG}`;
-}
-
 // ---- Búsqueda por ciudad ----
 async function handleSearch(){
   const raw = inputCity.value;
@@ -115,6 +104,10 @@ async function handleSearch(){
     inputCity.focus();
     return;
   }
+  if(!API_KEY || API_KEY === "TU_API_KEY_AQUI"){
+    setStatus("⚠️ Falta la API key o es inválida. Añádela en config.js.","error");
+    return;
+  }
 
   const city = raw.trim();
   setStatus(`Buscando clima para ${normalizeCityName(city)}…`,"loading");
@@ -122,15 +115,15 @@ async function handleSearch(){
   if(forecastGrid) forecastGrid.innerHTML = "";
 
   try{
-    // Actual
-    const currentURL  = buildWeatherByCityURL(city);
+    // Clima actual
+    const currentURL  = `${BASE_URL}/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
     const currentData = await fetchJSON(currentURL);
     renderCurrentWeatherReal(currentData);
 
-    // Forecast
+    // Pronóstico 24h
     if(forecastGrid){
       forecastGrid.innerHTML = `<p class="loading">Cargando pronóstico…</p>`;
-      const forecastURL  = buildForecastByCityURL(city);
+      const forecastURL  = `${BASE_URL}/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
       const forecastData = await fetchJSON(forecastURL);
       renderForecast24h(forecastData.list);
     }
@@ -149,20 +142,22 @@ async function handleSearch(){
 }
 
 // ---- Geolocalización ----
-async function fetchCurrentByCoords(lat,lon){
-  return await fetchJSON(buildWeatherByCoordsURL(lat,lon));
+async function fetchCurrentByCoords(lat, lon){
+  const url = `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
+  return await fetchJSON(url);
 }
-async function fetchForecastByCoords(lat,lon){
-  return await fetchJSON(buildForecastByCoordsURL(lat,lon));
+async function fetchForecastByCoords(lat, lon){
+  const url = `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
+  return await fetchJSON(url);
 }
-async function loadWeatherByCoords(lat,lon){
+async function loadWeatherByCoords(lat, lon){
   weatherBox.innerHTML = `<p>Buscando clima en tu ubicación…</p>`;
   if(forecastGrid) forecastGrid.innerHTML = `<p class="loading">Cargando pronóstico…</p>`;
-  const current = await fetchCurrentByCoords(lat,lon);
+  const current = await fetchCurrentByCoords(lat, lon);
   renderCurrentWeatherReal(current);
   if(forecastGrid){
-    const fc = await fetchForecastByCoords(lat,lon);
-    renderForecast24h(fc.list);
+    const forecast = await fetchForecastByCoords(lat, lon);
+    renderForecast24h(forecast.list);
   }
 }
 
@@ -191,7 +186,7 @@ if(btnTheme){
 
 // ---- Eventos ----
 btnSearch.addEventListener("click", handleSearch);
-inputCity.addEventListener("keydown",(e)=>{
+inputCity.addEventListener("keydown", (e)=>{
   if(e.key==="Enter"){ e.preventDefault(); handleSearch(); }
 });
 btnGeo.addEventListener("click", ()=>{
@@ -226,3 +221,6 @@ btnGeo.addEventListener("click", ()=>{
     { enableHighAccuracy:false, timeout:8000, maximumAge:0 }
   );
 });
+
+
+

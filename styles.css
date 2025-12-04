@@ -1,123 +1,326 @@
+/* ============================================================
+   Weather UI — diseño tipo mockup, con modo claro/oscuro
+   * Glow azul claro removido *
+   ============================================================ */
+
+/* ===========================
+   PALETA MODO CLARO
+   =========================== */
 :root{
-  --bg: #e6ecf5;          /* fondo CLARO */
-  --fg: #0b1220;          /* texto oscuro */
-  --card: #030101;        /* tarjetas claras */
-  --muted: #5b6472;       /* secundaria */
-  --border: #e5e9f2;      /* bordes suaves */
-  --accent: #7c4dff;      /* acento violeta */
-  --accent-2: #00bcd4;    /* acento secundario teal */
-  --ring: rgba(124,77,255,.25);
+  --bg-1: #dfe9f6;
+  --bg-2: #cddbf1;
+
+  --text: #0b1a2f;
+  --muted: rgba(20,30,50,0.55);
+
+  --accent: #4b7aff;
+  --accent-2: #5ed5ff;
+
+  --card-bg: rgba(255,255,255,0.35);
+  --glass: rgba(255,255,255,0.40);
+  --glass-2: rgba(0,0,0,0.08);
+  --glass-3: rgba(0,0,0,0.15);
+
+  --border: rgba(255,255,255,0.55);
+  --chip-bg: rgba(255,255,255,0.55);
+
+  --shadow: rgba(0,0,0,0.15);
+
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --ring: rgba(90,140,255,0.25);
 }
 
+/* ===========================
+   PALETA MODO OSCURO (mockup)
+   =========================== */
 :root.dark{
-  --bg: #0b1220;
-  --fg: #e6eaf2;
-  --card: #0f1626;
-  --muted: #99a3b2;
-  --border: #1a2538;
-  --accent: #7c4dff;
-  --accent-2: #00e0ff;
-  --ring: rgba(0,224,255,.35);
+  --bg-1: #041025;
+  --bg-2: #07243b;
+
+  --text: #eaf6ff;
+  --muted: rgba(230,240,255,0.6);
+
+  --accent: #66d2ff;
+  --accent-2: #7a5cff;
+
+  --card-bg: rgba(255,255,255,0.03);
+  --glass: rgba(255,255,255,0.03);
+  --glass-2: rgba(255,255,255,0.02);
+  --glass-3: rgba(0,0,0,0.12);
+
+  --border: rgba(255,255,255,0.06);
+  --chip-bg: rgba(255,255,255,0.05);
+
+  --shadow: rgba(6,12,30,0.65);
+  --ring: rgba(122,92,255,0.18);
 }
 
-
-
-html { font-size: 16px; }
+/* ============================================================
+   BASE
+   ============================================================ */
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
 body{
-  margin:0; padding:2rem 1rem;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial;
-  color: var(--fg);
+  margin:0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system;
+  color:var(--text);
+
   background:
-    radial-gradient(1200px 600px at 80% -10%, color-mix(in srgb, var(--accent) 25%, transparent), transparent 60%),
-    radial-gradient(900px 500px at -20% 10%, color-mix(in srgb, var(--accent-2) 18%, transparent), transparent 55%),
-    var(--bg);
-  line-height:1.6;
-}
-main{ max-width: 1000px; margin: 0 auto; }
+    linear-gradient(180deg, var(--bg-1), var(--bg-2));
 
+  padding:28px 18px;
+  -webkit-font-smoothing:antialiased;
+}
+
+main{ max-width:1120px; margin:0 auto; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
 h1{
-  text-align:center;
-  margin:0 0 1rem;
-  font-weight:800;
-  letter-spacing:.3px;
-  font-size: clamp(1.6rem, 2vw + 1rem, 2.4rem);
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  -webkit-background-clip:text; background-clip:text; color: transparent;
-}
-header{ display:flex; flex-direction:column; align-items:center; gap:.75rem; margin-bottom:1.5rem; }
+  font-family: "Poppins", sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 
+  /* Efecto degradado en el texto */
+  background: linear-gradient(90deg, #ffffff, #d4f1ff, #a8e0ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Sombra suave */
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+
+  margin-bottom: 20px;
+}
+#btnTheme{
+  width:44px; height:44px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  display:grid; place-items:center;
+  background:var(--glass);
+  backdrop-filter:blur(8px);
+}
+
+/* ============================================================
+   BUSCADOR
+   ============================================================ */
 .search{
-  display:flex; justify-content:center; gap:.5rem; flex-wrap:wrap;
-  margin: .5rem auto 1.25rem;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-bottom:20px;
 }
 
 .search input{
-  width:min(56ch, 80vw);
-  padding:.8rem 1rem;
+  width:min(60ch, 80vw);
+  padding:12px 16px;
   border-radius:999px;
+  border:1px solid var(--glass-3);
+  background:var(--glass);
+  backdrop-filter:blur(8px);
+  color:var(--text);
+  font-weight:600;
+}
+
+/* ============================================================
+   TARJETA PRINCIPAL DEL CLIMA
+   ============================================================ */
+.weather{
+  width:100%;
+  padding:20px;
+  border-radius:var(--radius-lg);
   border:1px solid var(--border);
-  background: rgba(255,255,255,.02);
-  color: var(--fg);
-  outline:none;
-  box-shadow: 0 0 0 0 var(--ring);
+  background:var(--card-bg);
+  backdrop-filter:blur(18px);
+  box-shadow:0 30px 80px var(--shadow);
+  display:grid;
+  gap:20px;
+  position:relative;
+  overflow:hidden;
 }
-.search input:focus{ box-shadow: 0 0 0 6px var(--ring); }
 
-button{
-  padding:.8rem 1rem; border-radius:999px;
+/* ====== Glow eliminado ====== */
+.weather::before{
+  content:none !important;
+}
+.weather::after{
+  content:none !important;
+}
+
+/* ============================================================
+   TOP ROW
+   ============================================================ */
+.top{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+.chips{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.chip{
+  padding:8px 14px;
+  border-radius:999px;
+  background:var(--chip-bg);
   border:1px solid var(--border);
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-  color: var(--fg); font-weight:700; letter-spacing:.2px;
-  transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease;
+  font-weight:700;
 }
-button:hover{ transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 60%, var(--border)); }
-button:active{ transform: translateY(0); }
-button:focus-visible{ box-shadow: 0 0 0 6px var(--ring); outline:none; }
-button[disabled]{ opacity:.6; cursor:not-allowed; }
+.chip.active{
+  background:linear-gradient(90deg, var(--accent-2), var(--accent));
+  color:#fff;
+}
 
-.status{
-  text-align:center; min-height:1.25rem; margin-top:.5rem;
-  color: var(--muted);
+/* ============================================================
+   HERO (icono + temperatura)
+   ============================================================ */
+.hero{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:18px;
 }
-.loading{ display:inline-flex; align-items:center; gap:.5rem; }
-.loading::before{
-  content:""; width:1rem; height:1rem; border-radius:50%;
-  border:2px solid var(--border); border-top-color: var(--accent);
-  animation: spin .7s linear infinite;
-}
-@keyframes spin{ to{ transform: rotate(360deg); } }
 
-.weather, .forecast{
-  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+.icon{
+  width:130px;
+  height:130px;
+  border-radius:18px;
   border:1px solid var(--border);
-  border-radius:16px;
-  padding:1rem 1.25rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
-  backdrop-filter: blur(6px);
+  background:var(--glass);
+  display:grid;
+  place-items:center;
+  backdrop-filter:blur(12px);
 }
-.weather{ max-width: 960px; margin: 1rem auto; }
+.icon img, .icon svg{
+  width:90px;
+}
 
-.forecast{ max-width: 1000px; margin: 1rem auto; }
-.forecast h2{ margin:.25rem 0 1rem; }
+.temp-block{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.temp{
+  font-size:clamp(2.6rem, 6vw, 5rem);
+  font-weight:900;
+  background:linear-gradient(90deg, #fff, #e9f6ff);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.sub{
+  font-size:.85rem;
+  letter-spacing:1px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+.stats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.stat{
+  padding:8px 12px;
+  border-radius:12px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  font-weight:700;
+  color:var(--muted);
+}
+
+/* ============================================================
+   FORECAST PREVIEW
+   ============================================================ */
+.forecast-preview{
+  padding:14px;
+  border-radius:12px;
+  background:var(--glass);
+  border:1px solid var(--glass-2);
+  display:flex;
+  gap:14px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.preview-timeline{
+  display:flex;
+  gap:10px;
+  overflow:auto;
+}
+
+.tick{
+  padding:8px 10px;
+  min-width:70px;
+  text-align:center;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--glass);
+}
+
+/* ============================================================
+   FORECAST GRID
+   ============================================================ */
+.forecast{
+  padding:18px;
+  border-radius:14px;
+  background:var(--glass);
+  border:1px solid var(--border);
+}
+
 .forecast-grid{
-  display:grid; gap:.9rem;
-  grid-template-columns: repeat(2, minmax(0,1fr));
+  display:grid;
+  gap:12px;
+  grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
 }
-@media (min-width: 520px){ .forecast-grid{ grid-template-columns: repeat(3,1fr); } }
-@media (min-width: 768px){ .forecast-grid{ grid-template-columns: repeat(4,1fr); } }
-@media (min-width: 1100px){ .forecast-grid{ grid-template-columns: repeat(6,1fr); } }
 
 .forecast-item{
-  text-align:center; border:1px solid var(--border);
-  border-radius:14px; padding:.85rem;
-  background: rgba(255,255,255,.02);
-}
-.forecast-item .t{ font-weight:800; font-size:1.15rem; }
-
-#btnTheme{
-  width:44px; height:44px; display:grid; place-items:center;
+  padding:12px;
   border-radius:12px;
   border:1px solid var(--border);
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-  box-shadow: 0 8px 20px rgba(0,0,0,.25);
+  background:var(--glass);
+  text-align:center;
 }
+
+.time{
+  color:var(--muted);
+  font-weight:700;
+}
+
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+.status{
+  text-align:center;
+  color:var(--muted);
+  font-weight:700;
+  margin-top:6px;
+}
+
+.hidden{
+  display:none !important;
+}
+
+

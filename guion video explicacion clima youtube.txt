@@ -1,0 +1,30 @@
+Guion completo de ejemplo (para leer natural)
+
+“Hola, soy Claudio Fanelli, desarrollador front-end, y este es mi proyecto App del Clima.
+Es una aplicación web moderna y responsive que te permite consultar el clima actual y el pronóstico de las próximas 24 horas.
+
+Por ejemplo, si busco ‘Buenos Aires’, la app obtiene los datos en tiempo real usando la API de OpenWeather, detecta mi ubicación automáticamente y muestra un diseño adaptado con modo claro u oscuro.
+
+Está desarrollada con HTML, CSS y JavaScript moderno, aplicando buenas prácticas como asincronía con async/await, modularización y un diseño accesible basado en glassmorphism.
+
+Durante el desarrollo aprendí a optimizar la carga de datos, manejar errores de red y mejorar la experiencia del usuario con feedback visual.
+
+Mis próximos pasos son agregar selector de unidades y convertirla en una PWA.
+
+Podés probarla en mi GitHub o ver la demo en vivo.
+¡Gracias por ver, y si te gustó, contame qué te pareció!”
+
+
+Recomendación práctica
+
+➡️ Grabá tu video con OBS, edítalo si querés (solo recortá el inicio/final).
+➡️ Subilo como no listado en YouTube.
+➡️ Añadí el enlace en:
+
+Tu CV (en la descripción del proyecto)
+
+Tu portafolio web o GitHub
+
+Tus mensajes de postulación o LinkedIn
+
+De esa forma, podés mostrarlo cuando quieras, sin tener que hacerlo público todavía.
