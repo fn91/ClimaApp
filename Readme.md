@@ -2,7 +2,7 @@
 
 **Una experiencia meteorológica minimalista, audaz y tipográfica. Diseño de vanguardia inspirado en el estilo suizo aplicado a una herramienta funcional.**
 
-![Banner de la App](./docs/screenshot-banner.png)
+![Banner de la App]([./docs/screenshot-banner.png](https://ibb.co/cMjWWTy))
 
 👉 **[Ver Demo en Vivo](https://clima-app-sooty.vercel.app/)**
 
