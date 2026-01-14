@@ -1,112 +1,92 @@
-# 🌤️ App del Clima – Front-End 2025  
+# 🌦️ App del Clima – Editorial Design 2025
 
-**Una aplicación moderna, responsive y dinámica para consultar el clima actual y el pronóstico de 24 h.**  
+**Una experiencia meteorológica minimalista, audaz y tipográfica. Diseño de vanguardia inspirado en el estilo suizo aplicado a una herramienta funcional.**
 
-![Demo](./docs/screenshot-banner.png)
+![Banner de la App](./docs/screenshot-banner.png)
 
----
-
-## 🧭 Descripción
-
-Aplicación web desarrollada con **HTML, CSS y JavaScript (ES6+)** que permite:
-
-- Buscar el clima actual por **nombre de ciudad** 🌆  
-- Obtener datos en tiempo real mediante la **API de OpenWeather** ☁️  
-- Consultar el **pronóstico de las próximas 24 horas** 📅  
-- Detectar automáticamente la **ubicación del usuario** 🌍  
-- Cambiar entre **modo claro / oscuro** con persistencia 🌓  
-- Mostrar **mensajes de estado** y un **spinner de carga animado** 💫  
-
-Diseñada con un enfoque moderno (2025) usando **glassmorphism**, **gradientes suaves** y **UX accesible**.
+👉 **[Ver Demo en Vivo](https://fn91.github.io/app-clima/)**
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## 🧭 Concepto y Diseño
 
-| Tecnología | Uso principal |
-|-------------|----------------|
-| **HTML5** | Estructura semántica de la aplicación |
-| **CSS3** | Diseño responsive, variables y temas (claro/oscuro) |
-| **JavaScript (ES6+)** | Lógica de búsqueda, consumo de API, manejo de eventos |
-| **OpenWeather API** | Fuente de datos meteorológicos |
-| **GitHub Pages** | Hosting estático para la demo en línea |
+Esta versión rompe con la estética genérica de las aplicaciones del clima tradicionales. Hemos abandonado el *glassmorphism* y los gradientes coloridos en favor de:
+
+- **Tipografía de Impacto:** Uso de `Outfit` para jerarquías audaces y `JetBrains Mono` para datos técnicos.
+- **Micro-texturas:** Una sutil capa de grano y patrones para una sensación táctil y humana.
+- **Grilla Asimétrica:** Un layout dinámico que prioriza la lectura y la jerarquía visual del clima actual.
+- **Alto Contraste:** Una paleta monocromática potente con acentos en Azul Eléctrico (`#0047ff`).
 
 ---
 
-## 🚀 Demo en vivo
+## 🛠️ Funcionalidades Core
 
-👉 **[Abrir aplicación](https://fn91.github.io/app-clima/)**  
+- **Consulta Global:** Búsqueda instantánea por nombre de ciudad 🌆.
+- **Geolocalización:** Acceso a datos locales con un solo clic 🌍.
+- **Datos en Tiempo Real:** Integración directa con **OpenWeather API** ☁️.
+- **Pronóstico 24h:** Visualización detallada de las próximas horas con scroll horizontal 📅.
+- **Modo Dual:** Soporte nativo para Temas Claro y Oscuro con persistencia en `localStorage` 🌓.
+- **UX Reactiva:** Estados de carga, errores y validaciones fluidas 💫.
 
-*(Funciona mejor en navegadores modernos y*
+---
 
-## 🧩 Estructura del proyecto
+## 🚀 Tecnologías
 
-├── index.html # Página principal
-├── styles.css # Estilos y temas
-├── app.js # Lógica principal (búsqueda, fetch, render)
-├── config.js # API Key de OpenWeather
-├── /docs # Imágenes, capturas y recursos del README
-└── README.md
+| Tecnología | Rol en el Proyecto |
+|-------------|--------------------|
+| **HTML5** | Estructura semántica y accesible |
+| **CSS3** | Layout Grid, Variables y Diseño Editorial |
+| **JS (ES6+)** | Lógica de negocio y consumo asíncrono de API |
+| **OpenWeather** | Motor de datos meteorológicos |
 
+---
 
-## ⚙️ Configuración local
+## 🧩 Estructura
 
-1️⃣ **Clona el repositorio**
+```text
+├── index.html   # Estructura semántica
+├── styles.css   # Sistema de diseño (CSS Variables + Grid)
+├── app.js       # Orquestador de lógica (Fetch & Render)
+├── config.js    # Configuración de API
+├── /docs        # Activos y documentación visual
+└── Readme.md    # Documentación del proyecto
+```
 
+---
+
+## ⚙️ Configuración e Instalación
+
+1️⃣ **Clona este repositorio**
 ```bash
 git clone https://github.com/fn91/app-clima.git
 cd app-clima
+```
 
-2️⃣ Añade tu clave de API
-
-Crea una cuenta gratuita en OpenWeather
-
-y copia tu clave en el archivo config.js config.example.js("Ejemplo"):
-
+2️⃣ **Configura tu API Key**
+Obtén tu clave gratuita en [OpenWeather](https://openweathermap.org/) y agrégala en `config.js`:
+```javascript
 const API_KEY = "TU_API_KEY_AQUI";
+```
 
+3️⃣ **Inicia la App**
+Solo abre `index.html` en tu navegador o usa la extensión **Live Server** de VS Code.
 
-3️⃣ Abre el proyecto
+---
 
-Simplemente abre index.html en tu navegador.
+## 🧠 Enfoque Técnico
 
-💡 Consejo: si usas VS Code, instala la extensión “Live Server” para previsualizar en localhost.
+- **Modularidad:** Separación estricta entre estilos (CSS), estructura (HTML) y lógica (JS).
+- **Escalabilidad:** Uso extensivo de variables CSS para facilitar cambios globales de marca.
+- **Rendimiento:** Carga diferida de iconos y manejo optimizado de peticiones de red.
+- **Accesibilidad:** Uso de `aria-live` para anuncios de estado y navegación por teclado optimizada.
 
-💅 Características destacadas
+---
 
-✅ Diseño glassmorphism con gradientes dinámicos
-✅ Responsive (móvil, tablet y escritorio)
-✅ Lazy loading de iconos del pronóstico
-✅ Modo oscuro/claro persistente con localStorage
-✅ Mensajes de estado y spinner integrados (setStatus, lock)
-✅ Validación de entrada y manejo de errores de red
+## 👤 Autor
 
-🧠 Aprendizajes y enfoque técnico
+**Fn – Programador Front-End**  
+💼 [LinkedIn](https://www.linkedin.com/in/claudio-fanelli/)  
+💻 [GitHub](https://github.com/fn91)
 
-Durante el desarrollo se aplicaron buenas prácticas de Front-End moderno:
-
-Organización modular de funciones (handleSearch, setStatus, lock, renderForecast24h)
-
-Uso de async/await y try/catch/finally para flujo de red limpio
-
-Variables CSS (--fg, --bg, --accent, etc.) para escalabilidad de temas
-
-Principios de accesibilidad (aria-live, focus-visible)
-
-Separación clara entre lógica, estilo y presentación
-
-📦 Futuras mejoras
-
-🌡️ Selector de unidades (°C / °F)
-
-🗺️ Mapa interactivo con Leaflet o Mapbox
-
-📱 Widget instalable como PWA
-
-🔔 Notificaciones meteorológicas
-
-👤 Autor
-
-Fn – Programador Front-End
-💼 LinkedIn https://www.linkedin.com/in/claudio-fanelli/
- • 💻 GitHub https://github.com/fn91#
+---
+*Producido con enfoque en el diseño visual y la excelencia en el código.*

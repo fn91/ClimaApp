@@ -1,13 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;400;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
-/* ============================================================
-   THE ARCHITECT — Creative Developer Concept
-   Focus: Hierarchy, Contrast, and Intentional Asymmetry
-   ============================================================ */
+
 
 :root {
   --bg: #ececec;
-  /* Softer, less bright background */
+
   --text: #0a0a0a;
   --accent: #0047ff;
   --muted: #a3a3a3;
@@ -19,7 +16,7 @@
   --transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Subtle texture to reduce solid 'glare' */
+
 body::before {
   content: "";
   position: fixed;
@@ -37,12 +34,11 @@ body::before {
   --bg: #0a0a0a;
   --text: #ffffff;
   --accent: #0047ff;
-  /* Electric Blue */
   --muted: #404040;
   --border: #262626;
 }
 
-/* Base styles */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -67,9 +63,7 @@ main {
   gap: 20px;
 }
 
-/* ============================================================
-   HEADER: The Global Identity
-   ============================================================ */
+
 header {
   grid-column: 1 / -1;
   display: flex;
@@ -112,9 +106,7 @@ h1::before {
   color: var(--bg);
 }
 
-/* ============================================================
-   SEARCH: The Interface Overlay
-   ============================================================ */
+
 .search {
   grid-column: 1 / 5;
   grid-row: 2;
@@ -163,9 +155,7 @@ h1::before {
   border: 1px solid var(--border);
 }
 
-/* ============================================================
-   WEATHER DATA: The Focal Point
-   ============================================================ */
+
 .weather {
   grid-column: 6 / -1;
   grid-row: 2;
@@ -178,7 +168,7 @@ h1::before {
   flex-direction: column;
 }
 
-/* The Headline: City */
+
 .weather h2 {
   font-size: clamp(3rem, 10vw, 9rem);
   font-weight: 900;
@@ -188,7 +178,7 @@ h1::before {
   letter-spacing: -0.04em;
 }
 
-/* Large Temp Contrast */
+
 .weather p[style*="font-size:2rem"] {
   position: relative !important;
   font-size: clamp(6rem, 20vw, 15rem) !important;
@@ -210,7 +200,7 @@ h1::before {
   font-weight: 400;
 }
 
-/* Info Labels */
+
 .weather p:not([style*="font-size:2rem"]) {
   font-family: var(--font-mono);
   font-size: 0.9rem;
@@ -228,9 +218,7 @@ h1::before {
   background: none;
 }
 
-/* ============================================================
-   FORECAST: The Data Array
-   ============================================================ */
+
 .forecast {
   grid-column: 1 / -1;
   margin-top: 100px;
@@ -299,9 +287,6 @@ h1::before {
   margin-bottom: 10px;
 }
 
-/* ================= ===========================================
-   UTILITIES & STATUS
-   ============================================================ */
 .status {
   grid-column: 1 / 5;
   font-family: var(--font-mono);
