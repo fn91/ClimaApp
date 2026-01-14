@@ -1,326 +1,340 @@
-/* ============================================================
-   Weather UI — diseño tipo mockup, con modo claro/oscuro
-   * Glow azul claro removido *
-   ============================================================ */
-
-/* ===========================
-   PALETA MODO CLARO
-   =========================== */
-:root{
-  --bg-1: #dfe9f6;
-  --bg-2: #cddbf1;
-
-  --text: #0b1a2f;
-  --muted: rgba(20,30,50,0.55);
-
-  --accent: #4b7aff;
-  --accent-2: #5ed5ff;
-
-  --card-bg: rgba(255,255,255,0.35);
-  --glass: rgba(255,255,255,0.40);
-  --glass-2: rgba(0,0,0,0.08);
-  --glass-3: rgba(0,0,0,0.15);
-
-  --border: rgba(255,255,255,0.55);
-  --chip-bg: rgba(255,255,255,0.55);
-
-  --shadow: rgba(0,0,0,0.15);
-
-  --radius-lg: 20px;
-  --radius-md: 12px;
-  --ring: rgba(90,140,255,0.25);
-}
-
-/* ===========================
-   PALETA MODO OSCURO (mockup)
-   =========================== */
-:root.dark{
-  --bg-1: #041025;
-  --bg-2: #07243b;
-
-  --text: #eaf6ff;
-  --muted: rgba(230,240,255,0.6);
-
-  --accent: #66d2ff;
-  --accent-2: #7a5cff;
-
-  --card-bg: rgba(255,255,255,0.03);
-  --glass: rgba(255,255,255,0.03);
-  --glass-2: rgba(255,255,255,0.02);
-  --glass-3: rgba(0,0,0,0.12);
-
-  --border: rgba(255,255,255,0.06);
-  --chip-bg: rgba(255,255,255,0.05);
-
-  --shadow: rgba(6,12,30,0.65);
-  --ring: rgba(122,92,255,0.18);
-}
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;400;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
 /* ============================================================
-   BASE
+   THE ARCHITECT — Creative Developer Concept
+   Focus: Hierarchy, Contrast, and Intentional Asymmetry
    ============================================================ */
-*{ box-sizing:border-box; }
-html,body{ height:100%; }
-body{
-  margin:0;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system;
-  color:var(--text);
 
-  background:
-    linear-gradient(180deg, var(--bg-1), var(--bg-2));
+:root {
+  --bg: #ececec;
+  /* Softer, less bright background */
+  --text: #0a0a0a;
+  --accent: #0047ff;
+  --muted: #a3a3a3;
+  --border: #e5e5e5;
 
-  padding:28px 18px;
-  -webkit-font-smoothing:antialiased;
+  --font-main: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-main{ max-width:1120px; margin:0 auto; }
+/* Subtle texture to reduce solid 'glare' */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("https://www.transparenttextures.com/patterns/pinstriped-suit.png");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 10;
+}
+
+:root.dark {
+  --bg: #0a0a0a;
+  --text: #ffffff;
+  --accent: #0047ff;
+  /* Electric Blue */
+  --muted: #404040;
+  --border: #262626;
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  line-height: 1.1;
+  padding: clamp(20px, 5vw, 60px);
+  min-height: 100vh;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+}
 
 /* ============================================================
-   HEADER
+   HEADER: The Global Identity
    ============================================================ */
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
+header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 80px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
 }
-h1{
-  font-family: "Poppins", sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  text-align: center;
-  color: #ffffff;
+
+h1 {
+  font-size: 1.2rem;
+  font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 0.1em;
+  color: var(--muted) !important;
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  text-shadow: none !important;
+}
 
-  /* Efecto degradado en el texto */
-  background: linear-gradient(90deg, #ffffff, #d4f1ff, #a8e0ff);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+h1::before {
 
-  /* Sombra suave */
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  font-family: var(--font-mono);
+}
 
+#btnTheme {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all var(--transition);
+}
+
+#btnTheme:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* ============================================================
+   SEARCH: The Interface Overlay
+   ============================================================ */
+.search {
+  grid-column: 1 / 5;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-self: flex-start;
+}
+
+.search input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: 1.5rem;
+  padding: 10px 0;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.search input:focus {
+  border-color: var(--accent);
+}
+
+.search button {
+  background: var(--border);
+  color: var(--text);
+  border: none;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+}
+
+.search button:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+#btnGeo {
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+/* ============================================================
+   WEATHER DATA: The Focal Point
+   ============================================================ */
+.weather {
+  grid-column: 6 / -1;
+  grid-row: 2;
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The Headline: City */
+.weather h2 {
+  font-size: clamp(3rem, 10vw, 9rem);
+  font-weight: 900;
+  line-height: 0.9;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+  letter-spacing: -0.04em;
+}
+
+/* Large Temp Contrast */
+.weather p[style*="font-size:2rem"] {
+  position: relative !important;
+  font-size: clamp(6rem, 20vw, 15rem) !important;
+  font-weight: 900 !important;
+  line-height: 0.8 !important;
+  color: var(--accent) !important;
+  margin: -10px 0 20px -5px !important;
+  transform: none !important;
+  text-shadow: none !important;
+}
+
+.weather p[style*="font-size:2rem"]::after {
+  content: "METRIC";
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  vertical-align: super;
+  margin-left: 10px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* Info Labels */
+.weather p:not([style*="font-size:2rem"]) {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding: 15px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.weather p strong {
+  color: var(--text);
+  font-weight: 700;
+  background: none;
+}
+
+/* ============================================================
+   FORECAST: The Data Array
+   ============================================================ */
+.forecast {
+  grid-column: 1 / -1;
+  margin-top: 100px;
+  border-top: 4px solid var(--text);
+  padding-top: 20px;
+  background: transparent;
+}
+
+.forecast h2 {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+
+.forecast-grid {
+  display: flex !important;
+  overflow-x: auto;
+  gap: 0;
+  grid-template-columns: none;
+}
+
+.forecast-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.forecast-item {
+  flex: 1;
+  min-width: 200px;
+  padding: 30px;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  transition: background-color var(--transition);
+}
+
+.forecast-item:hover {
+  background: var(--border);
+}
+
+.forecast-item div:nth-child(1) {
+  font-size: 1.5rem;
+  font-weight: 900;
   margin-bottom: 20px;
 }
-#btnTheme{
-  width:44px; height:44px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  display:grid; place-items:center;
-  background:var(--glass);
-  backdrop-filter:blur(8px);
+
+.forecast-item .t {
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--accent);
+  margin-bottom: 10px;
 }
 
-/* ============================================================
-   BUSCADOR
+.forecast-item div:last-child {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.forecast-item img {
+  filter: grayscale(1) invert(var(--dark-mode-invert, 0));
+  width: 40px;
+  margin-bottom: 10px;
+}
+
+/* ================= ===========================================
+   UTILITIES & STATUS
    ============================================================ */
-.search{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:center;
-  margin-bottom:20px;
+.status {
+  grid-column: 1 / 5;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  margin-top: 20px;
+  text-transform: uppercase;
+  border: none;
+  padding: 0;
+  opacity: 1;
+  transform: none;
 }
 
-.search input{
-  width:min(60ch, 80vw);
-  padding:12px 16px;
-  border-radius:999px;
-  border:1px solid var(--glass-3);
-  background:var(--glass);
-  backdrop-filter:blur(8px);
-  color:var(--text);
-  font-weight:600;
+.dark {
+  --dark-mode-invert: 1;
 }
 
-/* ============================================================
-   TARJETA PRINCIPAL DEL CLIMA
-   ============================================================ */
-.weather{
-  width:100%;
-  padding:20px;
-  border-radius:var(--radius-lg);
-  border:1px solid var(--border);
-  background:var(--card-bg);
-  backdrop-filter:blur(18px);
-  box-shadow:0 30px 80px var(--shadow);
-  display:grid;
-  gap:20px;
-  position:relative;
-  overflow:hidden;
-}
+@media (max-width: 1000px) {
+  main {
+    display: block;
+  }
 
-/* ====== Glow eliminado ====== */
-.weather::before{
-  content:none !important;
-}
-.weather::after{
-  content:none !important;
-}
+  .search {
+    margin-bottom: 60px;
+    width: 100%;
+  }
 
-/* ============================================================
-   TOP ROW
-   ============================================================ */
-.top{
-  display:flex;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:12px;
-}
+  .weather h2 {
+    font-size: 4rem;
+  }
 
-.chips{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
+  .forecast-item {
+    min-width: 150px;
+    padding: 15px;
+  }
 }
-.chip{
-  padding:8px 14px;
-  border-radius:999px;
-  background:var(--chip-bg);
-  border:1px solid var(--border);
-  font-weight:700;
-}
-.chip.active{
-  background:linear-gradient(90deg, var(--accent-2), var(--accent));
-  color:#fff;
-}
-
-/* ============================================================
-   HERO (icono + temperatura)
-   ============================================================ */
-.hero{
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:18px;
-}
-
-.icon{
-  width:130px;
-  height:130px;
-  border-radius:18px;
-  border:1px solid var(--border);
-  background:var(--glass);
-  display:grid;
-  place-items:center;
-  backdrop-filter:blur(12px);
-}
-.icon img, .icon svg{
-  width:90px;
-}
-
-.temp-block{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-
-.temp{
-  font-size:clamp(2.6rem, 6vw, 5rem);
-  font-weight:900;
-  background:linear-gradient(90deg, #fff, #e9f6ff);
-  background-clip:text;
-  -webkit-background-clip:text;
-  color:transparent;
-}
-
-.sub{
-  font-size:.85rem;
-  letter-spacing:1px;
-  color:var(--muted);
-  text-transform:uppercase;
-}
-
-/* ============================================================
-   STATS
-   ============================================================ */
-.stats{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
-
-.stat{
-  padding:8px 12px;
-  border-radius:12px;
-  background:var(--glass);
-  border:1px solid var(--border);
-  font-weight:700;
-  color:var(--muted);
-}
-
-/* ============================================================
-   FORECAST PREVIEW
-   ============================================================ */
-.forecast-preview{
-  padding:14px;
-  border-radius:12px;
-  background:var(--glass);
-  border:1px solid var(--glass-2);
-  display:flex;
-  gap:14px;
-  align-items:center;
-  flex-wrap:wrap;
-}
-
-.preview-timeline{
-  display:flex;
-  gap:10px;
-  overflow:auto;
-}
-
-.tick{
-  padding:8px 10px;
-  min-width:70px;
-  text-align:center;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:var(--glass);
-}
-
-/* ============================================================
-   FORECAST GRID
-   ============================================================ */
-.forecast{
-  padding:18px;
-  border-radius:14px;
-  background:var(--glass);
-  border:1px solid var(--border);
-}
-
-.forecast-grid{
-  display:grid;
-  gap:12px;
-  grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
-}
-
-.forecast-item{
-  padding:12px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:var(--glass);
-  text-align:center;
-}
-
-.time{
-  color:var(--muted);
-  font-weight:700;
-}
-
-/* ============================================================
-   UTILIDADES
-   ============================================================ */
-.status{
-  text-align:center;
-  color:var(--muted);
-  font-weight:700;
-  margin-top:6px;
-}
-
-.hidden{
-  display:none !important;
-}
-
-
