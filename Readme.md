@@ -4,7 +4,7 @@
 
 ![Banner de la App](./docs/screenshot-banner.png)
 
-👉 **[Ver Demo en Vivo]([https://clima-app-sooty.vercel.app/])**
+👉 **[Ver Demo en Vivo](https://clima-app-sooty.vercel.app/)**
 
 ---
 
