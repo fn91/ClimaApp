@@ -1,5 +1,5 @@
 // =======================
-// App del Clima — SOLO CLIENTE (OpenWeather directo)
+// App del Clima
 // =======================
 
 // ---- Nodos del DOM ----
@@ -10,12 +10,6 @@ const btnTheme     = document.getElementById("btnTheme");
 const weatherBox   = document.getElementById("weather");
 const forecastGrid = document.getElementById("forecastGrid");
 const statusEl     = document.getElementById("status");
-
-// ---- Constantes ----
-const UNITS = "metric";           // °C
-const LANG  = "es";               // idioma
-const BASE_URL = "https://api.openweathermap.org/data/2.5";
-const API_KEY  = window.OPENWEATHER_API_KEY; // definido en config.js
 
 // ---- Helpers de UI ----
 function normalizeCityName(str){
@@ -34,9 +28,10 @@ function fmtHour(ts){ return new Date(ts*1000).toLocaleTimeString([], {hour:"2-d
 
 
 
-// ---- fetchJSON (OpenWeather devuelve JSON incluso en error) ----
-async function fetchJSON(url){
-  const res = await fetch(url);
+// ---- Consultas de clima ----
+async function fetchWeather(type, location){
+  const query = new URLSearchParams({ type, ...location });
+  const res = await fetch(`/api/weather?${query}`);
   let payload;
   try { payload = await res.json(); }
   catch { throw new Error(`Respuesta no válida (status ${res.status})`); }
@@ -104,11 +99,6 @@ async function handleSearch(){
     inputCity.focus();
     return;
   }
-  if(!API_KEY || API_KEY === "TU_API_KEY_AQUI"){
-    setStatus("⚠️ Falta la API key o es inválida. Añádela en config.js.","error");
-    return;
-  }
-
   const city = raw.trim();
   setStatus(`Buscando clima para ${normalizeCityName(city)}…`,"loading");
   lock(btnSearch,true);
@@ -116,15 +106,13 @@ async function handleSearch(){
 
   try{
     // Clima actual
-    const currentURL  = `${BASE_URL}/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
-    const currentData = await fetchJSON(currentURL);
+    const currentData = await fetchWeather("weather", { q: city });
     renderCurrentWeatherReal(currentData);
 
     // Pronóstico 24h
     if(forecastGrid){
       forecastGrid.innerHTML = `<p class="loading">Cargando pronóstico…</p>`;
-      const forecastURL  = `${BASE_URL}/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
-      const forecastData = await fetchJSON(forecastURL);
+      const forecastData = await fetchWeather("forecast", { q: city });
       renderForecast24h(forecastData.list);
     }
 
@@ -132,9 +120,10 @@ async function handleSearch(){
   }catch(err){
     console.error(err);
     setStatus(`No se pudo obtener el clima. ${err.message || ""}`,"error");
-    weatherBox.innerHTML = `
-      <p style="color:#b91c1c">❌ No se pudo obtener el clima para "${normalizeCityName(city)}".<br>
-      <small>${err.message || ""}</small></p>`;
+    const message = document.createElement("p");
+    message.style.color = "#b91c1c";
+    message.textContent = `❌ No se pudo obtener el clima para "${normalizeCityName(city)}".`;
+    weatherBox.replaceChildren(message);
     if(forecastGrid) forecastGrid.innerHTML = "";
   }finally{
     lock(btnSearch,false);
@@ -142,21 +131,13 @@ async function handleSearch(){
 }
 
 // ---- Geolocalización ----
-async function fetchCurrentByCoords(lat, lon){
-  const url = `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
-  return await fetchJSON(url);
-}
-async function fetchForecastByCoords(lat, lon){
-  const url = `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
-  return await fetchJSON(url);
-}
 async function loadWeatherByCoords(lat, lon){
   weatherBox.innerHTML = `<p>Buscando clima en tu ubicación…</p>`;
   if(forecastGrid) forecastGrid.innerHTML = `<p class="loading">Cargando pronóstico…</p>`;
-  const current = await fetchCurrentByCoords(lat, lon);
+  const current = await fetchWeather("weather", { lat, lon });
   renderCurrentWeatherReal(current);
   if(forecastGrid){
-    const forecast = await fetchForecastByCoords(lat, lon);
+    const forecast = await fetchWeather("forecast", { lat, lon });
     renderForecast24h(forecast.list);
   }
 }
