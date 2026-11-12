@@ -23,7 +23,7 @@ Esta versión rompe con la estética genérica de las aplicaciones del clima tra
 
 - **Consulta Global:** Búsqueda instantánea por nombre de ciudad 🌆.
 - **Geolocalización:** Acceso a datos locales con un solo clic 🌍.
-- **Datos en Tiempo Real:** Integración directa con **OpenWeather API** ☁️.
+- **Datos en Tiempo Real:** Una función de Vercel consulta **OpenWeather API** ☁️.
 - **Pronóstico 24h:** Visualización detallada de las próximas horas con scroll horizontal 📅.
 - **Modo Dual:** Soporte nativo para Temas Claro y Oscuro con persistencia en `localStorage` 🌓.
 - **UX Reactiva:** Estados de carga, errores y validaciones fluidas 💫.
@@ -47,8 +47,7 @@ Esta versión rompe con la estética genérica de las aplicaciones del clima tra
 ├── index.html   # Estructura semántica
 ├── styles.css   # Sistema de diseño (CSS Variables + Grid)
 ├── app.js       # Orquestador de lógica (Fetch & Render)
-├── config.js    # Configuración de API
-├── /docs        # Activos y documentación visual
+├── api/weather.mjs # Consultas a OpenWeather desde el servidor
 └── Readme.md    # Documentación del proyecto
 ```
 
@@ -58,18 +57,24 @@ Esta versión rompe con la estética genérica de las aplicaciones del clima tra
 
 1️⃣ **Clona este repositorio**
 ```bash
-git clone https://github.com/fn91/app-clima.git
-cd app-clima
+git clone https://github.com/fn91/ClimaApp.git
+cd ClimaApp
 ```
 
-2️⃣ **Configura tu API Key**
-Obtén tu clave gratuita en [OpenWeather](https://openweathermap.org/) y agrégala en `config.js`:
-```javascript
-const API_KEY = "TU_API_KEY_AQUI";
+2️⃣ **Configura la clave en Vercel**
+
+Crea una clave en [OpenWeather](https://home.openweathermap.org/api_keys). En tu proyecto de Vercel, ve a **Settings → Environment Variables** y guarda la clave como `OPENWEATHER_API_KEY`. Selecciona **Production** para el sitio publicado y **Development** para las pruebas locales. Si una clave anterior se incluyó en Git o en un archivo público como `config.js`, revócala en OpenWeather.
+
+3️⃣ **Prueba y despliega**
+
+Desde la raíz del proyecto, vincula tu proyecto de Vercel y ejecuta su servidor local:
+
+```bash
+npx vercel link
+npx vercel dev
 ```
 
-3️⃣ **Inicia la App**
-Solo abre `index.html` en tu navegador o usa la extensión **Live Server** de VS Code.
+Abre la URL que muestra Vercel. Para aplicar el cambio al sitio público, despliega esta versión después de guardar la variable de producción. El navegador consulta `/api/weather` y la función añade la clave al contactar con OpenWeather.
 
 ---
 

@@ -1,1 +1,5 @@
 config.js
+.env
+.env.*
+.vercel/
+node_modules/
